@@ -1,6 +1,7 @@
 import pandas as pd
+from .Indicator import Indicator
 
-class MACD:
+class MACD(Indicator):
     def __init__(self, short_span: int = 12, long_span: int = 26, signal_span: int = 9):
         """
         Initializes the MACD class with given spans for short, long, and signal windows.
@@ -14,7 +15,7 @@ class MACD:
         self.long_span = long_span
         self.signal_span = signal_span
 
-    def calculate_macd(self, data: pd.DataFrame) -> None:
+    def calculate(self, data: pd.DataFrame) -> None:
         """
         Calculates the MACD and Signal line for the given data.
 
@@ -25,11 +26,11 @@ class MACD:
         data['short_window'] = data['price'].ewm(span=self.short_span, adjust=False).mean()
         # Calculate long-term EMA
         data['long_window'] = data['price'].ewm(span=self.long_span, adjust=False).mean()
-        
+
         # Calculate MACD
         data['MACD'] = data['short_window'] - data['long_window']
         # Calculate Signal line
-        data['Signal'] = data['MACD'].ewm(span=self.signal_span, adjust=False).mean()
+        data['MACD_Signal'] = data['MACD'].ewm(span=self.signal_span, adjust=False).mean()
 
     def evaluate_signal(self, data: pd.DataFrame) -> str:
         """
@@ -46,9 +47,9 @@ class MACD:
         second_last_row = data.iloc[-2]
 
         # Determine the trading signal
-        if (second_last_row['MACD'] > second_last_row['Signal'] and last_row['MACD'] < last_row['Signal']):
+        if (second_last_row['MACD'] > second_last_row['MACD_Signal'] and last_row['MACD'] < last_row['MACD_Signal']):
             return 'sell'
-        elif (second_last_row['MACD'] < second_last_row['Signal'] and last_row['MACD'] > last_row['Signal']):
+        elif (second_last_row['MACD'] < second_last_row['MACD_Signal'] and last_row['MACD'] > last_row['MACD_Signal']):
             return 'buy'
         else:
             return 'hold'

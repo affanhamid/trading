@@ -1,22 +1,20 @@
 from Data_Processing.MACD import MACD
-from Order_Management.order_manager import OrderManager
+from .Strategy import Strategy
+from pandas import DataFrame
 
-class MACD_Strategy:
+class MACD_Strategy(Strategy):
+    """A trading strategy class that uses MACD to determine buy or sell signals."""
+
     def __init__(self):
-        self.MACD = MACD()
-        self.bought = False
-        self.order_manager = OrderManager()
+        """Initialize the MACD strategy with a MACD processor."""
+        super().__init__(MACD)  # Initialize the base Strategy class with MACD as the indicator
         
-    def process_data(self, data, quantity):
+    def process_data(self, data: DataFrame, quantity: int):
+        """
+        Process the given data to execute trading orders based on MACD signals using the superclass's method.
 
-        self.MACD.calculate_macd(data)
-
-        if data.shape[0] > 2:
-            order_type = self.MACD.evaluate_signal(data)
-
-            if order_type == 'buy' and not self.bought:
-                self.bought = True
-                self.order_manager.buy(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)
-            elif order_type == 'sell' and self.bought:
-                self.bought = False
-                self.order_manager.sell(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)
+        Args:
+            data (DataFrame): The market data.
+            quantity (int): The amount to buy or sell.
+        """
+        super().process_data(data, quantity)  # Use the process_data method from the Strategy superclass
