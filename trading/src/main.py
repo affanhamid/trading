@@ -14,7 +14,7 @@ def main() -> None:
     poller.run_query_on_interval(
         symbol="BTC-USD", 
         interval=5, 
-        show_graph=True, 
+        show_graph=False, 
         persistence=60, 
         quantity=0.004
     )

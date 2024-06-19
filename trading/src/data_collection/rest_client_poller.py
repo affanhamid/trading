@@ -47,6 +47,17 @@ class RESTClientPoller:
             return combined_data
         return wrapper
 
+    def save_data_to_file(self):
+        """
+        Saves the current DataFrame to a CSV file.
+
+        This method will export the `data` attribute, which contains the market data,
+        to a CSV file located at a predefined path. The index of the DataFrame is not
+        included in the CSV file.
+        """
+        file_path = '../../logs/dataframes/data.csv'  # Path where the CSV file will be saved
+        self.data.to_csv(file_path, index=False)  # Save DataFrame to CSV without the index
+
     @log_rest_query
     @auto_update_data
     def run_query(self, symbol: str, persistence: int = 10) -> dict:
@@ -143,6 +154,7 @@ class RESTClientPoller:
         if len(self.data) >= persistence:
             self.data = self.data.iloc[1:].reset_index(drop=True)
         self.data = pd.concat([self.data, new_row], ignore_index=True)
+        self.save_data_to_file()
         self.visualizer.set_data(self.data)
         self.run_strategy()
 

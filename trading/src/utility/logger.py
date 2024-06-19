@@ -3,6 +3,19 @@ from datetime import datetime
 from functools import wraps
 from typing import Callable, Any
 
+def get_current_date_log_filename(log_directory: str) -> str:
+    """
+    Generates a log filename based on the current date and specified directory.
+    
+    Args:
+        log_directory (str): The directory where the log file will be stored.
+    
+    Returns:
+        str: The path to the log file.
+    """
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    return f'../../{log_directory}/{current_date}.log'
+
 def log_rest_query(func: Callable) -> Callable:
     """
     Decorator to log REST API queries.
@@ -16,13 +29,11 @@ def log_rest_query(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         symbol = kwargs['symbol']
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        log_filename = f'logs/rest_queries/{current_date}.log'
+        log_filename = get_current_date_log_filename('logs/rest_queries')
         logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(message)s')
         logging.info(f"REST query for symbol: {symbol}")
         return func(*args, **kwargs)
     return wrapper
-
 
 def log_buy_order(func: Callable) -> Callable:
     """
@@ -39,8 +50,8 @@ def log_buy_order(func: Callable) -> Callable:
         price = kwargs.get('price')
         time = kwargs.get('time')
         quantity = kwargs.get('quantity')
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        with open(f'logs/orders/{current_date}.txt', 'a') as f:
+        log_filename = get_current_date_log_filename('/logs/orders')
+        with open(log_filename, 'a') as f:
             f.write(f'{time} Buy {quantity} @ {price} ')
         return func(self, *args, **kwargs)
     return wrapper
@@ -61,12 +72,10 @@ def log_sell_order(func: Callable) -> Callable:
         time = kwargs.get('time')
         quantity = kwargs.get('quantity')
         last_bought = 0
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        # Read the last bought price from the log file
-        with open(f'logs/orders/{current_date}.txt', 'r') as f:
+        log_filename = get_current_date_log_filename('/logs/orders')
+        with open(log_filename, 'r') as f:
             last_bought = float(f.read().split('\n')[-1].split(' ')[4])
-        # Log the sell order with profit calculation
-        with open(f'logs/orders/{current_date}.txt', 'a') as f:
+        with open(log_filename, 'a') as f:
             f.write(f'{time} Sell {quantity} @ {price} Profit = {round(float(price)*quantity - last_bought*quantity, 3)} ')
         return func(self, *args, **kwargs)
     return wrapper
