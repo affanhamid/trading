@@ -10,13 +10,13 @@ source trading_env/bin/activate
 
 # Download and install TA-Lib
 cd ~
-# wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-# tar -xzvf ta-lib-0.4.0-src.tar.gz
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+tar -xzvf ta-lib-0.4.0-src.tar.gz
 mkdir ta-lib
 cd ta-lib
-# ./configure --prefix=/usr
-# make
-# sudo make install
+./configure --prefix=/usr
+make
+sudo make install
 
 cd ~/trading
 
