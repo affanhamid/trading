@@ -16,8 +16,10 @@ cd ta-lib
 ./configure --prefix=/usr
 make
 sudo make install
+cd ..
 
 # Install requirements
+source trading_env/bin/activate
 pip install -r ./trading/requirements.txt
 
 nohup python3 trading/src/main.py > trading/logs/trading_bot.log 2>&1 &
