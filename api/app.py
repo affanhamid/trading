@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get("/data/")
 async def get_data():
-    file_path = '../logs/dataframes/data.csv'  # Adjust the path as necessary
+    file_path = 'logs/dataframes/data.csv'  # Adjust the path as necessary
     df = pd.read_csv(file_path)
     # Replace NaN values with None, which converts to null in JSON
     df_cleaned = df.fillna('null')

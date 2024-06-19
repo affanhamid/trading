@@ -55,7 +55,7 @@ class RESTClientPoller:
         to a CSV file located at a predefined path. The index of the DataFrame is not
         included in the CSV file.
         """
-        file_path = '../../logs/dataframes/data.csv'  # Path where the CSV file will be saved
+        file_path = 'logs/dataframes/data.csv'  # Path where the CSV file will be saved
         self.data.to_csv(file_path, index=False)  # Save DataFrame to CSV without the index
 
     @log_rest_query

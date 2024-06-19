@@ -14,7 +14,7 @@ def get_current_date_log_filename(log_directory: str) -> str:
         str: The path to the log file.
     """
     current_date = datetime.now().strftime("%Y-%m-%d")
-    return f'../../{log_directory}/{current_date}.log'
+    return f'{log_directory}/{current_date}.log'
 
 def log_rest_query(func: Callable) -> Callable:
     """
