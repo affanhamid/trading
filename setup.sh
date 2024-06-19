@@ -10,13 +10,15 @@ source trading_env/bin/activate
 
 # Download and install TA-Lib
 cd ~
-wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-tar -xzvf ta-lib-0.4.0-src.tar.gz
-cd ta-lib
-./configure --prefix=/usr
-make
-sudo make install
-cd ..
+# wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+# tar -xzvf ta-lib-0.4.0-src.tar.gz
+# cd ta-lib
+# ./configure --prefix=/usr
+# make
+# sudo make install
+cd ../trading
+
+echo ls
 
 # Install requirements
 source trading_env/bin/activate
@@ -29,6 +31,6 @@ python3 -m venv api_env
 source api_env/bin/activate
 
 # Install requirements
-pip install -r ./api/equirements.txt
+pip install -r ./api/requirements.txt
 
 nohup uvicorn api.app:app --host 0.0.0.0 --port 8000 --reload > api/logs/server.log 2>&1 &
