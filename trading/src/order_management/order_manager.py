@@ -27,7 +27,7 @@ class OrderManager:
             time (str): The timestamp of the order.
             quantity (int): The amount to buy.
         """
-        print(f'{time} Buying {quantity} units @ ${price}.')
+        pass
 
     @log_sell_order
     @calculate_brokerage_fee
@@ -40,4 +40,4 @@ class OrderManager:
             time (str): The timestamp of the order.
             quantity (int): The amount to sell.
         """
-        print(f'{time} Selling {quantity} units @ ${price}.')
+        pass

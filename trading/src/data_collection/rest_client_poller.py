@@ -1,5 +1,4 @@
 from clients.rest_client import RESTClientWrapper
-from utility.logger import log_rest_query
 from visualization.visualizer import Visualizer
 from order_management.order_manager import OrderManager
 from trading_strategies.strategy import Strategy
@@ -58,7 +57,6 @@ class RESTClientPoller:
         file_path = 'logs/dataframes/data.csv'  # Path where the CSV file will be saved
         self.data.to_csv(file_path, index=False)  # Save DataFrame to CSV without the index
 
-    @log_rest_query
     @auto_update_data
     def run_query(self, symbol: str, persistence: int = 10) -> dict:
         """

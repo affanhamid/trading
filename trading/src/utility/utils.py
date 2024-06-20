@@ -1,7 +1,19 @@
-import datetime
+from datetime import datetime
 from functools import wraps
 
-import datetime
+def get_current_date_log_filename(log_directory: str) -> str:
+    """
+    Generates a log filename based on the current date and specified directory.
+    
+    Args:
+        log_directory (str): The directory where the log file will be stored.
+    
+    Returns:
+        str: The path to the log file.
+    """
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    return f'{log_directory}/{current_date}.txt'
+
 
 def calculate_net_profit() -> None:
     """
@@ -41,12 +53,14 @@ def calculate_brokerage_fee(func):
     """
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        current_date: str = datetime.datetime.now().strftime("%Y-%m-%d")
         bought_price: float = 0.0
         sold_price: float = 0.0
+        taker_brokerage: float = 0.0035
+        maker_brokerage: float = 0.0075
         
         # Read the last line of the order log file for the current date
-        with open(f'logs/orders/{current_date}.txt', 'r') as f:
+        log_filename = get_current_date_log_filename('logs/orders')
+        with open(log_filename, 'r') as f:
             last_line: str = f.readlines()[-1]
             bought_price = float(last_line.split(' ')[4])
             sold_price = float(last_line.split(' ')[9])
@@ -54,10 +68,12 @@ def calculate_brokerage_fee(func):
             sold_quantity: float = float(last_line.split(' ')[7])
         
         # Calculate the brokerage fee
-        brokerage_fee: float = round(bought_price * bought_quantity * 0.012, 2) + round(sold_price * sold_quantity * 0.012, 2)
+        brokerage_fee: float = round(round(bought_price * bought_quantity * taker_brokerage, 2) + round(sold_price * sold_quantity * maker_brokerage, 2), 2)
+
+        log_filename = get_current_date_log_filename('logs/orders')
         
         # Append the brokerage fee to the order log file
-        with open(f'logs/orders/{current_date}.txt', 'a') as f:
+        with open(log_filename, 'a') as f:
             f.write(f'Brokerage Fee: {brokerage_fee}\n')
     
     return wrapper

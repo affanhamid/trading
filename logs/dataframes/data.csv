@@ -1,3 +1,0 @@
-product_id,price,size,time,side,best_bid,best_ask,short_window,long_window,MACD,MACD_Signal,high,low,AO,open,RVI,RVI_Signal
-BTC-USD,64890.05,0.00335632,2024-06-19 19:38:42.315745+00:00,SELL,64890.04,64890.05,64890.05,64890.05,0.0,0.0,,,,,,
-BTC-USD,64890.05,9.559e-05,2024-06-19 19:38:48.317271+00:00,SELL,64889.01,64890.05,,,,,,,,,,

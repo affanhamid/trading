@@ -1,8 +1,8 @@
 from .strategy import Strategy
 from pandas import DataFrame
-from dataprocessing.Indicator import Indicator
+from data_processing.indicator import Indicator
 
-class TestIndicator(Strategy):
+class PureIndicator(Strategy):
     """
     A trading strategy class that uses the Awesome Indicator to determine buy or sell signals.
     This class inherits from the Strategy base class and is designed to test the effectiveness
@@ -15,6 +15,7 @@ class TestIndicator(Strategy):
         This sets up the strategy to use the Awesome Indicator for generating trading signals.
         """
         super().__init__([indicator])
+        self.signals_to_graph = [['MACD', 'MACD_Signal']]
         
     def process_data(self, data: DataFrame, quantity: int):
         """
@@ -26,4 +27,4 @@ class TestIndicator(Strategy):
             data (DataFrame): The market data to be processed.
             quantity (int): The amount to buy or sell based on the trading signals.
         """
-        print(super().process_data(data, quantity))
+        super().process_data(data, quantity)

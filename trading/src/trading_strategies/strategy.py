@@ -49,6 +49,6 @@ class Strategy:
             self.bought = True
             self.order_manager.buy(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)
 
-        elif order_type == 'sell' and self.bought:
+        if order_type == 'sell' and self.bought:
             self.bought = False
             self.order_manager.sell(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)

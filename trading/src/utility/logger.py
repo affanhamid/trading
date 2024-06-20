@@ -14,7 +14,7 @@ def get_current_date_log_filename(log_directory: str) -> str:
         str: The path to the log file.
     """
     current_date = datetime.now().strftime("%Y-%m-%d")
-    return f'{log_directory}/{current_date}.log'
+    return f'{log_directory}/{current_date}.txt'
 
 def log_rest_query(func: Callable) -> Callable:
     """
@@ -50,7 +50,7 @@ def log_buy_order(func: Callable) -> Callable:
         price = kwargs.get('price')
         time = kwargs.get('time')
         quantity = kwargs.get('quantity')
-        log_filename = get_current_date_log_filename('/logs/orders')
+        log_filename = get_current_date_log_filename('logs/orders')
         with open(log_filename, 'a') as f:
             f.write(f'{time} Buy {quantity} @ {price} ')
         return func(self, *args, **kwargs)
@@ -72,7 +72,7 @@ def log_sell_order(func: Callable) -> Callable:
         time = kwargs.get('time')
         quantity = kwargs.get('quantity')
         last_bought = 0
-        log_filename = get_current_date_log_filename('/logs/orders')
+        log_filename = get_current_date_log_filename('logs/orders')
         with open(log_filename, 'r') as f:
             last_bought = float(f.read().split('\n')[-1].split(' ')[4])
         with open(log_filename, 'a') as f:
