@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import pandas as pd
+import uvicorn
+import os
 
 app = FastAPI()
 
@@ -17,9 +19,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/data/")
-async def get_data():
-    file_path = 'logs/dataframes/data.csv'  # Adjust the path as necessary
+@app.get("/strategies")
+async def get_strategies():
+    base_path = 'logs/dataframes'
+    strategies = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+    return {"strategies": strategies}
+
+@app.get("/timeframes/{strategy}")
+async def get_timeframes(strategy: str):
+    base_path = f'logs/dataframes/{strategy}'
+    if os.path.exists(base_path) and os.path.isdir(base_path):
+        timeframes = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        return {"timeframes": timeframes}
+    else:
+        return {"error": "Strategy not found"}, 404
+
+
+@app.get("/data/{strategy}/{timeframe}")
+async def get_data(strategy: str, timeframe: str):
+    file_path = f'logs/dataframes/{strategy}/{timeframe}/data.csv'  # Adjust the path as necessary
     df = pd.read_csv(file_path)
     # Replace NaN values with None, which converts to null in JSON
     df_cleaned = df.fillna('null')
@@ -43,9 +61,9 @@ def process_trade(trade):
         return "No trades data found for today."
 
 
-@app.get("/trades/{date}")
-async def get_trades(date: str):
-    file_path = f'logs/orders/{date}.txt'
+@app.get("/trades/{strategy}/{timeframe}/{date}")
+async def get_trades(strategy: str, timeframe: str, date: str):
+    file_path = f'logs/orders/{strategy}/{timeframe}/{date}.txt'
     try:
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -53,3 +71,8 @@ async def get_trades(date: str):
     except FileNotFoundError:
         trades_data = ["No trades data found for today."]
     return {"data": trades_data}
+
+
+if __name__ == "__main__":
+    # uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="/etc/letsencrypt/live/affanhamid.com/privkey.pem", ssl_certfile="/etc/letsencrypt/live/affanhamid.com/fullchain.pem")
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -3,7 +3,7 @@ from data_processing.indicator import Indicator
 import pandas as pd
 
 class Strategy:
-    def __init__(self, indicators: list[type[Indicator]]):
+    def __init__(self, indicators: list[type[Indicator]], interval):
         """
         Initializes the Strategy class with a list of indicator classes.
 
@@ -13,6 +13,7 @@ class Strategy:
         self.bought = False  # Flag to track if a buy order has been executed
         self.order_manager = OrderManager()  # Manages trading orders
         self.indicators = [indicator() for indicator in indicators]  # Instantiate indicators
+        self.interval = interval
 
     def process_data(self, data: pd.DataFrame, quantity: int):
         """
@@ -47,8 +48,11 @@ class Strategy:
         """
         if order_type == 'buy' and not self.bought:
             self.bought = True
-            self.order_manager.buy(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)
+            self.order_manager.buy(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity, interval = self.interval, strategy=self.__str__())
 
         if order_type == 'sell' and self.bought:
             self.bought = False
-            self.order_manager.sell(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity)
+            self.order_manager.sell(price=data.iloc[-1].price, time=data.iloc[-1].time.time(), quantity=quantity, interval = self.interval, strategy=self.__str__())
+
+    def __str__(self):
+        return f"Strategy(indicators={[indicator.__str__() for indicator in self.indicators]})"

@@ -9,13 +9,14 @@ class PureIndicator(Strategy):
     of the Awesome Indicator in a trading strategy.
     """
 
-    def __init__(self, indicator: Indicator):
+    def __init__(self, indicator: Indicator, interval: int):
         """
         Initialize the TestIndicator strategy with the Awesome Indicator.
         This sets up the strategy to use the Awesome Indicator for generating trading signals.
         """
-        super().__init__([indicator])
+        super().__init__([indicator], interval=interval)
         self.signals_to_graph = [['MACD', 'MACD_Signal']]
+        self.interval = interval
         
     def process_data(self, data: DataFrame, quantity: int):
         """
@@ -28,3 +29,6 @@ class PureIndicator(Strategy):
             quantity (int): The amount to buy or sell based on the trading signals.
         """
         super().process_data(data, quantity)
+    
+    def __str__(self):
+        return f"PureIndicator({[indicator.__str__() for indicator in self.indicators]})"

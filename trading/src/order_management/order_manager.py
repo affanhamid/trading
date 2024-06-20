@@ -1,5 +1,5 @@
-from utility.logger import log_buy_order, log_sell_order
-from utility.utils import calculate_brokerage_fee
+from __future__ import annotations
+from utility.logger import log_buy_order, log_sell_order, calculate_brokerage_fee
 
 class OrderManager:
     """Manages buy and sell orders for trading."""
@@ -18,7 +18,7 @@ class OrderManager:
         self. data = data
 
     @log_buy_order
-    def buy(self, price: float, time: str, quantity: int) -> None:
+    def buy(self, price: float, time: str, quantity: int, strategy: 'Strategy', interval: int) -> None:
         """
         Executes a buy order and logs the transaction.
 
@@ -31,7 +31,7 @@ class OrderManager:
 
     @log_sell_order
     @calculate_brokerage_fee
-    def sell(self, price: float, time: str, quantity: int) -> None:
+    def sell(self, price: float, time: str, quantity: int, strategy: 'Strategy', interval: int) -> None:
         """
         Executes a sell order, calculates brokerage, and logs the transaction.
 

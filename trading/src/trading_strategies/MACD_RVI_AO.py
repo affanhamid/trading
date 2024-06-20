@@ -5,13 +5,13 @@ from trading_strategies.strategy import Strategy
 import pandas as pd
 
 class MACD_RVI_AO_Strategy(Strategy):
-    def __init__(self):
+    def __init__(self, interval: int):
         """
         Initializes the MACD_RVI_AO_Strategy class which inherits from the Strategy class.
         This strategy uses MACD, Awesome Oscillator, and Relative Vigor Index indicators.
         """
         indicators = [MACD, AwesomeIndicator, RelativeVigorIndex]
-        super().__init__(indicators=indicators)
+        super().__init__(indicators=indicators, interval=interval)
         self.signals = pd.DataFrame({'MACD': [], 'AO': [], 'RVI': []})
         self.signals_to_graph = [['price', 'high', 'low'], ['AO'], ['MACD', 'MACD_Signal'], ['RVI', 'RVI_Signal']]
 
@@ -35,7 +35,6 @@ class MACD_RVI_AO_Strategy(Strategy):
             self.signals = pd.concat([self.signals, pd.DataFrame({'MACD': [signals[0]], 'AO': [signals[1]], 'RVI': [signals[2]]})], ignore_index=True)
 
             recent_signals = self.signals.tail(5)
-            print(signals)
             recent_signals_buy = recent_signals[recent_signals['MACD'] == 'buy']
             recent_signals_sell = recent_signals[recent_signals['MACD'] == 'sell']
 
@@ -47,3 +46,6 @@ class MACD_RVI_AO_Strategy(Strategy):
             # Execute sell order if MACD and RVI signals agree and AO indicates a strong signal
             if (recent_signals_sell['MACD'] == recent_signals_sell['RVI']).any() and recent_signals_sell['AO'].iloc[-1] == 'strong signal':
                 self.add_order('sell', data, quantity)
+
+    def __str__(self):
+        return f"MACD_RVI_AO_Strategy(indicators={[indicator.__str__() for indicator in self.indicators]})"

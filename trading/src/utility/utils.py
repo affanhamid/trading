@@ -1,18 +1,32 @@
 from datetime import datetime
 from functools import wraps
+import os
 
-def get_current_date_log_filename(log_directory: str) -> str:
+def ensure_directory_exists(file_path: str):
     """
-    Generates a log filename based on the current date and specified directory.
+    Ensures that the directory for the given file path exists, creating it if necessary.
     
     Args:
-        log_directory (str): The directory where the log file will be stored.
-    
-    Returns:
-        str: The path to the log file.
+        file_path (str): The full path including the filename where the directory existence needs to be checked.
     """
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    return f'{log_directory}/{current_date}.txt'
+    directory_path = os.path.dirname(file_path)
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+def get_current_date_log_filename(log_directory: str) -> str:
+    """Generates a log filename for the current date in the specified directory."""
+    return f'{log_directory}/{datetime.now().strftime("%Y-%m-%d")}.txt'
+
+def format_time_duration(seconds: int) -> str:
+    """Formats seconds into a human-readable duration string."""
+    if seconds % 3600 == 0:
+        return f"{seconds // 3600}_hour"
+    elif seconds % 60 == 0:
+        return f"{seconds // 60}_min"
+    elif seconds % 86400 == 0:
+        return f"{seconds // 86400}_day"
+    else:
+        return f"{seconds}_sec"
 
 
 def calculate_net_profit() -> None:
@@ -41,39 +55,3 @@ def calculate_net_profit() -> None:
     # Print the calculated net profit, total profit, and total brokerage
     return (f"Net Profit: {round(net_profit, 2)}, Total Profit: {round(total_profit, 2)}, Total Brokerage: {round(total_brokerage, 2)}")
 
-def calculate_brokerage_fee(func):
-    """
-    Decorator to calculate and log the brokerage fee for the last order of the day.
-    
-    Args:
-        func (Callable): The function to be wrapped.
-    
-    Returns:
-        Callable: The wrapped function with brokerage fee calculation.
-    """
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        bought_price: float = 0.0
-        sold_price: float = 0.0
-        taker_brokerage: float = 0.0035
-        maker_brokerage: float = 0.0075
-        
-        # Read the last line of the order log file for the current date
-        log_filename = get_current_date_log_filename('logs/orders')
-        with open(log_filename, 'r') as f:
-            last_line: str = f.readlines()[-1]
-            bought_price = float(last_line.split(' ')[4])
-            sold_price = float(last_line.split(' ')[9])
-            bought_quantity: float = float(last_line.split(' ')[2])
-            sold_quantity: float = float(last_line.split(' ')[7])
-        
-        # Calculate the brokerage fee
-        brokerage_fee: float = round(round(bought_price * bought_quantity * taker_brokerage, 2) + round(sold_price * sold_quantity * maker_brokerage, 2), 2)
-
-        log_filename = get_current_date_log_filename('logs/orders')
-        
-        # Append the brokerage fee to the order log file
-        with open(log_filename, 'a') as f:
-            f.write(f'Brokerage Fee: {brokerage_fee}\n')
-    
-    return wrapper

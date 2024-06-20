@@ -34,3 +34,6 @@ class Indicator:
         data['high'] = data['price'].rolling(sliding_window).max()
         data['low'] = data['price'].rolling(sliding_window).min()
         return data
+
+    def __str__(self):
+        return self.__class__.__name__.split('.')[-1]

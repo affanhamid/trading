@@ -2,9 +2,10 @@ from clients.rest_client import RESTClientWrapper
 from visualization.visualizer import Visualizer
 from order_management.order_manager import OrderManager
 from trading_strategies.strategy import Strategy
-
+from utility.utils import format_time_duration, ensure_directory_exists
 import time
 import pandas as pd
+import os
 
 class RESTClientPoller:
     """
@@ -17,7 +18,7 @@ class RESTClientPoller:
         strategy (Strategy): An instance of Strategy to apply trading strategies on the data.
     """
     
-    def __init__(self, strategy: Strategy):
+    def __init__(self, strategy: Strategy, interval: int):
         """
         Initializes the RESTClientPoller with a specific trading strategy.
         
@@ -28,6 +29,7 @@ class RESTClientPoller:
         self.data = pd.DataFrame()  # DataFrame to store market data
         self.visualizer = Visualizer(signals = strategy.signals_to_graph)  # Visualizer for data visualization
         self.strategy = strategy  # Trading strategy instance
+        self.interval = interval
         
     def auto_update_data(func):
         """
@@ -54,8 +56,9 @@ class RESTClientPoller:
         to a CSV file located at a predefined path. The index of the DataFrame is not
         included in the CSV file.
         """
-        file_path = 'logs/dataframes/data.csv'  # Path where the CSV file will be saved
-        self.data.to_csv(file_path, index=False)  # Save DataFrame to CSV without the index
+        file_path = f'logs/dataframes/{self.strategy.__str__()}/{format_time_duration(self.interval)}/data.csv'
+        ensure_directory_exists(file_path)
+        self.data.to_csv(file_path, index=False)
 
     @auto_update_data
     def run_query(self, symbol: str, persistence: int = 10) -> dict:
@@ -75,7 +78,7 @@ class RESTClientPoller:
         combined_data = {**trade_details, **market_info}
         return combined_data
 
-    def run_query_on_interval(self, symbol: str, interval: int, show_graph: bool, persistence: int, quantity: int = 1):
+    def run_query_on_interval(self, symbol: str, show_graph: bool, persistence: int, quantity: int = 1):
         """
         Periodically executes queries at specified intervals and optionally displays a graph.
         
@@ -92,7 +95,7 @@ class RESTClientPoller:
             self.run_query(symbol=symbol, persistence=persistence)
             if show_graph:
                 self.visualizer.draw_graph()
-            time.sleep(interval)
+            time.sleep(self.interval)
 
     def fetch_market_data(self, symbol: str) -> dict:
         """
